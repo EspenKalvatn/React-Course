@@ -17,13 +17,17 @@ const App = () => {
   }, [])
 
 
+  const randomID = () => {
+    return Math.floor(Math.random() * 10000) + 1
+  }
+
     const addPerson = (event) => {
         console.log('Adding person: ', newName)
         event.preventDefault()
         const newPerson = {
             name: newName,
             number: newNumber,
-            id: persons.length + 1
+            id: randomID()
         }
 
         if (newName === '' || newNumber === '') {
@@ -45,6 +49,14 @@ const App = () => {
         setNewNumber('')
     }
 
+    const removePerson = (id) => {
+      console.log(`Deleting person with id ${id}`)
+      personService
+        .remove(id)
+        .then( () => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
 
     const handleNameInputChange = (event) => {
         setNewName(event.target.value)
@@ -75,7 +87,7 @@ const App = () => {
             />
 
             <h3>Numbers</h3>
-            <Persons persons={persons} filter={filter}/>
+            <Persons persons={persons} filter={filter} deleteHandler={removePerson}/>
         </div>
     )
 }
@@ -87,21 +99,21 @@ const Filter = ({handler, value}) => {
     )
 }
 
-const Person = ({name, number}) => {
+const Person = ({person, deleteHandler}) => {
     return (
       <div>
-          {name} {number}
+        {person.name} {person.number} {<button onClick={ () => deleteHandler(person.id) }>delete</button>}
       </div>
     )
 }
 
 
-const Persons = ({persons, filter}) => {
+const Persons = ({persons, filter, deleteHandler}) => {
     const filtered = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()) || person.number.toLowerCase().includes(filter.toLowerCase()))
 
     return (
       <div>
-          {filtered.map((person, index) => <Person key={index} name={person.name} number={person.number}/>)}
+          {filtered.map((person, index) => <Person key={index} person={person} deleteHandler={deleteHandler}/>)}
       </div>
     )
 }
