@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import personService from './services/persons'
 
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '040-123456', id: 1 },
-        { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-        { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-        { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-    ])
+    const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+
+
+  useEffect( () => {
+    personService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
+      })
+  }, [])
+
 
     const addPerson = (event) => {
         console.log('Adding person: ', newName)
@@ -27,7 +33,12 @@ const App = () => {
         } else if (persons.map(person => person.number).includes(newNumber)) {
             alert(`${newNumber} is already added to phonebook.`)
         } else {
-            setPersons(persons.concat(newPerson))
+          personService
+            .create(newPerson)
+            .then(returnedPerson => {
+              console.log(returnedPerson)
+              setPersons(persons.concat(returnedPerson))
+            })
         }
 
         setNewName('')
