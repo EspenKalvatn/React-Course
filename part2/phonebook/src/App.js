@@ -7,6 +7,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
 
+  console.log('persons', persons)
 
   useEffect( () => {
     personService
@@ -30,19 +31,24 @@ const App = () => {
             id: randomID()
         }
 
-        if (newName === '' || newNumber === '') {
-            alert(`Name or number cannot be empty.`)
-        } else if (persons.map(person => person.name).includes(newName)) {
-            alert(`${newName} is already added to phonebook.`)
-        } else if (persons.map(person => person.number).includes(newNumber)) {
-            alert(`${newNumber} is already added to phonebook.`)
-        } else {
+        const existingPerson = persons.find(person => person.name === newName)
+
+        if (existingPerson) {
+          window.confirm(`${newName} is already added to phonebook.`)
+          const updatedPerson = {...existingPerson, number: newNumber}
           personService
-            .create(newPerson)
+            .update(existingPerson.id, updatedPerson)
             .then(returnedPerson => {
-              console.log(returnedPerson)
-              setPersons(persons.concat(returnedPerson))
+              const updatedPerson = persons.map(person => person.id === returnedPerson.id ? returnedPerson : person)
+              setPersons(updatedPerson)
             })
+        } else {
+            personService
+            .create(newPerson)
+              .then(returnedPerson => {
+                console.log(returnedPerson)
+                setPersons(persons.concat(returnedPerson))
+              })
         }
 
         setNewName('')
