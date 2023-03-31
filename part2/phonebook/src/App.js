@@ -27,16 +27,12 @@ const App = () => {
     }, 3000)
   }
 
-  const randomID = () => {
-    return Math.floor(Math.random() * 10000) + 1
-  }
 
     const addPerson = (event) => {
       event.preventDefault()
       const newPerson = {
           name: newName,
           number: newNumber,
-          id: randomID()
       }
 
       const existingPerson = persons.find(person => person.name === newName)
@@ -63,9 +59,9 @@ const App = () => {
             .then(returnedPerson => {
               console.log(returnedPerson)
               setPersons(persons.concat(returnedPerson))
+              changeMessage(`Added ${newPerson.name}.`, 'success')
             })
-          changeMessage(`Added ${newPerson.name}.`, 'success')
-
+            .catch(() => changeMessage('Missing fields', 'error'))
       }
 
       setNewName('')
