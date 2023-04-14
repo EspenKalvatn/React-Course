@@ -46,9 +46,8 @@ const App = () => {
             setPersons(updatedPerson)
           })
           .catch(error => {
-            console.log('Updating number failed:', error.message)
-            changeMessage(`Information of ${existingPerson.name} has already been removed from server`, 'error')
-            setPersons(persons.filter(person => person.id !== existingPerson.id))
+            console.log(error.response.data.error)
+            changeMessage(error.response.data.error, 'error')
           })
 
         changeMessage(`Number is updated.`, 'success')
@@ -61,7 +60,10 @@ const App = () => {
               setPersons(persons.concat(returnedPerson))
               changeMessage(`Added ${newPerson.name}.`, 'success')
             })
-            .catch(() => changeMessage('Missing fields', 'error'))
+            .catch(error => {
+              console.log(error.response.data.error)
+              changeMessage(error.response.data.error, 'error')
+            })
       }
 
       setNewName('')
